@@ -37,16 +37,17 @@ recursionDepth = 0
 ways = []
 
 def getmydata(waylist):
+    global finishNode, lmx
     waysMessage = 'Максимальные пути: \n'
     for i in range(len(ways)):
         ways[i].reverse()
-        waysMessage = waysMessage + str(ways[i]) + '\n'
+        waysMessage = waysMessage + str(ways[i]) + ", длина: " + str(lmx[finishNode][findLimit(finishNode)])+'\n'
 
     tkinter.messagebox.showinfo(message=waysMessage, title='Максимальный путь')
 
 
 def getwaylist(col, fn, waylist): # recurrent function that should print several ways if there are
-    global mx, lmx, nmx, recursionDepth, ways
+    global mx, lmx, nmx, recursionDepth, ways, length
     if fn == 0:
         if waylist:
             print(waylist)
@@ -58,6 +59,7 @@ def getwaylist(col, fn, waylist): # recurrent function that should print several
             if recursionDepth == 0:
                 waylist.append(fn)
             waylist.append(nmx[fn][col][i])
+
 
             recursionDepth += 1
             getwaylist(findLimit(nmx[fn][col][i]), nmx[fn][col][i], waylist)    #call self to write way from previous node
@@ -101,13 +103,23 @@ def maxpath():
         nmx.append([ [] ]*len(mx))
 
 
-    # fill lambda matrix
+    #fill lambda matrix
     for lj in range(1, len(mx)): # changing column in lambda
         for li in range(1, len(mx)): # changing line in lambda
             lmx[li].append(-99)
             buff = maxsum(li, lj)   # buffer contains max sum at [0] and list of prev nodes at [1]
             lmx[li][lj] = buff[0]
             nmx[li][lj] = buff[1]
+
+    # for lj in range(0, len(mx)): # changing column in lambda
+    #     for li in range(0, len(mx)): # changing line in lambda
+    #         if (lj == 0 or li == 0) and len(nmx[li][lj]) == 0:
+    #             nmx[li][lj].append(0)
+    #         else:
+    #             lmx[li].append(-99)
+    #             buff = maxsum(li, lj)   # buffer contains max sum at [0] and list of prev nodes at [1]
+    #             lmx[li][lj] = buff[0]
+    #             nmx[li][lj] = buff[1]
 
 
     finishNode = int(finishNodeEntry.get())
@@ -238,7 +250,7 @@ btnMaxPath = Button(root, text="Максимальный путь", command = ma
 btnMaxPath.pack()
 
 finishNodeLabel = Label(root, text="До какой вершины?")
-
+finishNodeLabel.pack()
 finishNodeEntry = Entry(root, width=50)
 finishNodeEntry.pack()
 def refreshScreen():
